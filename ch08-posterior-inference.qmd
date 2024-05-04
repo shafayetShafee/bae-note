@@ -1,0 +1,161 @@
+# Posterior Inference & Prediction
+
+What are the chances that the modern artist is Gen X or even younger, i.e., born in 1965 or later? let $\pi$ denote the proportion of artists represented in major U.S. modern art museums that are Gen X or younger.
+
+
+```{r}
+#| message: false
+# Load packages
+library(bayesrules)
+library(tidyverse)
+library(rstan)
+library(bayesplot)
+library(broom.mixed)
+library(janitor)
+
+# Load data
+data("moma_sample")
+```
+
+
+```{r}
+moma_sample %>% 
+  count(genx)
+```
+
+So, by theory, the posterior pdf,
+
+$$
+\begin{split}
+Y | \pi & \sim \text{Bin}(100, \pi) \\
+\pi & \sim \text{Beta}(4, 6) \\
+\end{split} \;\;\;\; \Rightarrow \;\;\;\; \pi | (Y = 14) \sim \text{Beta}(18, 92)
+$$
+There are three common tasks in posterior analysis: 
+
+- Estimation, 
+- Hypothesis testing, and 
+- Prediction
+
+
+## Posterior analysis with MCMC
+
+### Posterior simulation
+
+```{r}
+#| results: hide
+# STEP 1: DEFINE the model
+art_model <- "
+  data {
+    int<lower = 0, upper = 100> Y;
+  }
+  
+  parameters {
+    real<lower = 0, upper = 1> pi;
+  }
+  
+  model {
+    Y ~ binomial(100, pi);
+    pi ~ beta(4, 6);
+  }
+"
+
+# STEP 2: SIMULATE the posterior
+art_sim <- stan(model_code = art_model, data = list(Y = 14),
+                chains = 4, iter = 5000*2, seed = 84735)
+```
+
+
+```{r}
+# Parallel trace plots
+mcmc_trace(art_sim, pars = "pi")
+```
+
+```{r}
+#| layout-ncol: 2
+# Parallel density plots
+mcmc_dens_overlay(art_sim, pars = "pi")
+
+# Autocorrelation plot
+mcmc_acf(art_sim, pars = "pi")
+```
+
+```{r}
+neff_ratio(art_sim, pars = "pi")
+rhat(art_sim, pars = "pi")
+```
+
+Our simulation is extremely stable.
+
+
+### Posterior estimation & hypothesis testing
+
+```{r}
+broom.mixed::tidy(art_sim, conf.int = TRUE, conf.level = 0.95)
+```
+
+> The estimate reports that the **median** of our 20,000 Markov chain value.
+
+```{r}
+# Shade in the middle 95% interval
+mcmc_areas(art_sim, pars = "pi", prob = 0.95)
+```
+
+```{r}
+# Store the 4 chains in 1 data frame
+art_chains_df <- as.data.frame(art_sim, pars = "pi")
+dim(art_chains_df)
+```
+
+```{r}
+# Calculate posterior summaries of pi
+art_chains_df %>% 
+  summarise(
+    post_mean = mean(pi),
+    post_median = median(pi),
+    post_mode = bayesrules::sample_mode(pi),
+    lower_95 = quantile(pi, 0.025),
+    upper_95 = quantile(pi, 0.975)
+  )
+```
+
+Testing the claim that fewer than 20% of major museum artists are Gen X,
+
+```{r}
+art_chains_df %>% 
+  mutate(test = pi < 0.20) %>% 
+  tabyl(test)
+```
+
+By this approximation, there’s an 85% chance that Gen X artist representation is under 0.20.
+
+
+### Posterior prediction    
+
+```{r}
+set.seed(1)
+
+art_chains_df %>% 
+  mutate(y_predict = rbinom(length(pi), size = 20, prob = pi)) -> art_chains_df
+
+art_chains_df %>% 
+  head()
+```
+
+```{r}
+# Plot the 20,000 predictions
+art_chains_df %>% 
+  ggplot(aes(x = y_predict)) +
+  stat_count()
+```
+
+```{r}
+# Posterior mean predicton and posterior prediction interval
+art_chains_df %>% 
+  summarise(
+    mean = mean(y_predict),
+    lower_80 = quantile(y_predict, 0.1),
+    upper_80 = quantile(y_predict, 0.9)
+  )
+```
+

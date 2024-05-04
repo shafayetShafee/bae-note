@@ -1,3 +1,12 @@
 # Preface {.unnumbered}
 
 This is sort of a note for myself while reading the book ["Bayes Rules"](https://www.bayesrulesbook.com/) and eventually most of the contents of this note are just a copy-paste from the book.
+
+::: {.callout-note}
+# Bayesian vs. Frequentist
+
+- In Bayesian analysis assesses the uncertainty regarding an unknown parameter in light of observed data, whereas, a frequentist analysis assesses the uncertainty of the observed data in light of assumed values of the parameter.
+
+- When testing hypotheses, it’s more natural to ask “how probable is my hypothesis?” (what the Bayesian probability answers) than “how probable is my data if my hypothesis weren’t true?” (what the frequentist probability answers). 
+
+:::

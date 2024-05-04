@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Bae-note",
     "section": "",
-    "text": "Preface\nThis is sort of a note for myself while reading the book “Bayes Rules” and eventually most of the contents of this note are just a copy-paste from the book.",
+    "text": "Preface\nThis is sort of a note for myself while reading the book “Bayes Rules” and eventually most of the contents of this note are just a copy-paste from the book.\n\n\n\n\n\n\nBayesian vs. Frequentist\n\n\n\n\nIn Bayesian analysis assesses the uncertainty regarding an unknown parameter in light of observed data, whereas, a frequentist analysis assesses the uncertainty of the observed data in light of assumed values of the parameter.\nWhen testing hypotheses, it’s more natural to ask “how probable is my hypothesis?” (what the Bayesian probability answers) than “how probable is my data if my hypothesis weren’t true?” (what the frequentist probability answers).",
     "crumbs": [
       "Preface"
     ]
@@ -67,6 +67,26 @@
     "text": "2.2 Practice: MCMC\n\nExercise 2.4 (MCMC with RStan: Steps 1 and 2) Use the given information to (1) define the Bayesian model structure, and (2) simulate the posterior using the correct RStan syntax. You don’t need to run the code, just provide the syntax.\n\n\\(Y|\\pi \\sim Bin(20, \\pi)\\) and \\(\\pi \\sim Beta(1, 1)\\) with \\(Y = 12\\).\n\\(Y|\\lambda \\sim Pois(\\lambda)\\) and \\(\\lambda \\sim Gamma(4, 2)\\) with \\(Y = 3\\).\n\\(Y|\\mu \\sim N(\\mu, 1^2)\\) and \\(\\mu \\sim N(0, 10^2)\\) with \\(Y = 12.2\\).\n\n\n\nSolution 2.7 (a). \n\nbb_model &lt;- \"\n  data {\n    int&lt;lower = 0, upper = 20&gt; Y;\n  }\n  \n  parameters {\n    real&lt;lower = 0, upper = 1&gt; pi;\n  }\n  \n  model {\n    Y ~ binomial(20, pi);\n    pi ~ beta(1, 1);\n  }\n\"\n\nbb_sim &lt;- stan(model_code = bb_model, data = list(Y = 12),\n               chains = 4, iter = 5000*2, seed = 84735)\n\n\n\nSolution 2.8 (b). \n\ngp_model &lt;- \"\n  data {\n    int&lt;lower = 0&gt; Y;\n  }\n  \n  parameters {\n    real&lt;lower = 0&gt; lambda;\n  }\n  \n  model {\n    Y ~ poisson(lambda);\n    lambda ~ gamma(4, 2);\n  }\n\"\n\ngp_sim &lt;- stan(model_code = gp_model, data = list(Y = 3),\n               chains = 4, iter = 5000*2, seed = 84735)\n\n\n\nSolution 2.9. \n\nnn_model &lt;- \"\n  data {\n    real Y;\n  }\n  \n  parameters {\n    real mu;\n  }\n  \n  model {\n    Y ~ normal(mu, 1);\n    mu ~ normal(0, 10);\n  }\n\"\n\nnn_sim &lt;- stan(model_code = nn_model, data = list(Y = 12.2),\n               chains = 4, iter = 5000*2, seed = 84735)",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Solutions to Chapter 06 Exercises</span>"
+    ]
+  },
+  {
+    "objectID": "ch08-posterior-inference.html",
+    "href": "ch08-posterior-inference.html",
+    "title": "3  Posterior Inference & Prediction",
+    "section": "",
+    "text": "3.1 Posterior analysis with MCMC",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Posterior Inference & Prediction</span>"
+    ]
+  },
+  {
+    "objectID": "ch08-posterior-inference.html#posterior-analysis-with-mcmc",
+    "href": "ch08-posterior-inference.html#posterior-analysis-with-mcmc",
+    "title": "3  Posterior Inference & Prediction",
+    "section": "",
+    "text": "3.1.1 Posterior simulation\n\n# STEP 1: DEFINE the model\nart_model &lt;- \"\n  data {\n    int&lt;lower = 0, upper = 100&gt; Y;\n  }\n  \n  parameters {\n    real&lt;lower = 0, upper = 1&gt; pi;\n  }\n  \n  model {\n    Y ~ binomial(100, pi);\n    pi ~ beta(4, 6);\n  }\n\"\n\n# STEP 2: SIMULATE the posterior\nart_sim &lt;- stan(model_code = art_model, data = list(Y = 14),\n                chains = 4, iter = 5000*2, seed = 84735)\n\n\n# Parallel trace plots\nmcmc_trace(art_sim, pars = \"pi\")\n\n\n\n\n\n\n\n\n# Parallel density plots\nmcmc_dens_overlay(art_sim, pars = \"pi\")\n# Autocorrelation plot\nmcmc_acf(art_sim, pars = \"pi\")\n\n\n\n\n\n\n\n\n\n\n\nneff_ratio(art_sim, pars = \"pi\")\n\n[1] 0.3688749\n\nrhat(art_sim, pars = \"pi\")\n\n[1] 1.000638\n\n\nOur simulation is extremely stable.\n\n\n3.1.2 Posterior estimation & hypothesis testing\n\nbroom.mixed::tidy(art_sim, conf.int = TRUE, conf.level = 0.95)\n\n# A tibble: 1 × 5\n  term  estimate std.error conf.low conf.high\n  &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;\n1 pi       0.164    0.0350    0.101     0.238\n\n\n\nThe estimate reports that the median of our 20,000 Markov chain value.\n\n\n# Shade in the middle 95% interval\nmcmc_areas(art_sim, pars = \"pi\", prob = 0.95)\n\n\n\n\n\n\n\n\n\n# Store the 4 chains in 1 data frame\nart_chains_df &lt;- as.data.frame(art_sim, pars = \"pi\")\ndim(art_chains_df)\n\n[1] 20000     1\n\n\n\n# Calculate posterior summaries of pi\nart_chains_df %&gt;% \n  summarise(\n    post_mean = mean(pi),\n    post_median = median(pi),\n    post_mode = bayesrules::sample_mode(pi),\n    lower_95 = quantile(pi, 0.025),\n    upper_95 = quantile(pi, 0.975)\n  )\n\n  post_mean post_median post_mode  lower_95  upper_95\n1 0.1636757   0.1617981 0.1577523 0.1007598 0.2384584\n\n\nTesting the claim that fewer than 20% of major museum artists are Gen X,\n\nart_chains_df %&gt;% \n  mutate(test = pi &lt; 0.20) %&gt;% \n  tabyl(test)\n\n  test     n percent\n FALSE  2987 0.14935\n  TRUE 17013 0.85065\n\n\nBy this approximation, there’s an 85% chance that Gen X artist representation is under 0.20.\n\n\n3.1.3 Posterior prediction\n\nset.seed(1)\n\nart_chains_df %&gt;% \n  mutate(y_predict = rbinom(length(pi), size = 20, prob = pi)) -&gt; art_chains_df\n\nart_chains_df %&gt;% \n  head()\n\n          pi y_predict\n1 0.13007016         2\n2 0.17552692         3\n3 0.22141712         5\n4 0.11582998         4\n5 0.07283286         0\n6 0.12821621         5\n\n\n\n# Plot the 20,000 predictions\nart_chains_df %&gt;% \n  ggplot(aes(x = y_predict)) +\n  stat_count()\n\n\n\n\n\n\n\n\n\n# Posterior mean predicton and posterior prediction interval\nart_chains_df %&gt;% \n  summarise(\n    mean = mean(y_predict),\n    lower_80 = quantile(y_predict, 0.1),\n    upper_80 = quantile(y_predict, 0.9)\n  )\n\n     mean lower_80 upper_80\n1 3.27505        1        6",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Posterior Inference & Prediction</span>"
     ]
   }
 ]

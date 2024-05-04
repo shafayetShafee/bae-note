@@ -11,6 +11,7 @@ book:
     - index.qmd
     - ch06-approx-posterior.qmd
     - ch06-soln.qmd
+    - ch08-posterior-inference.qmd
 
 
 format:
