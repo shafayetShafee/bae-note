@@ -1,0 +1,21 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Bae-note"
+  author: "Shafayet"
+  date: last-modified
+  date-format: long
+  chapters:
+    - index.qmd
+    - ch06-approx-posterior.qmd
+    - ch06-soln.qmd
+
+
+format:
+  html:
+    theme: cosmo
+execute: 
+  warning: false
+

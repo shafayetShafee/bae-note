@@ -1,0 +1,3 @@
+# Preface {.unnumbered}
+
+This is sort of a note for myself while reading the book ["Bayes Rules"](https://www.bayesrulesbook.com/) and eventually most of the contents of this note are just a copy-paste from the book.

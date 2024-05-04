@@ -1,0 +1,346 @@
+# Approximating the Posterior
+
+```{r}
+#| message: false
+# Load packages
+library(tidyverse)
+library(janitor)
+library(rstan)
+library(bayesplot)
+```
+
+
+## Grid Approximation
+
+### Beta-Binomial Example
+
+$$
+\begin{equation} 
+\begin{split}
+Y|\pi & \sim \text{Bin}(10, \pi) \\
+\pi   & \sim \text{Beta}(2, 2)  . \\
+\end{split}
+\end{equation}
+$$
+
+We can interpret $Y$ here as the number of successes in 10 independent trials. Each trial has probability of success π where our prior understanding about $\pi$ is captured by a $Beta(2, 2)$ model. Suppose we observe $Y = 9$ successes.
+
+```{r}
+# Step 1: Define a grid of 6 pi values
+grid_data <- data.frame(pi_grid = seq(from = 0, to = 1, length = 6))
+
+# Step 2: Evaluate the prior & likelihood at each pi
+grid_data <- grid_data %>% 
+  mutate(
+    prior = dbeta(pi_grid, 2, 2),
+    likelihood = dbinom(9, 10, pi_grid),
+    unnormalized = prior * likelihood,
+    # Step 3: Approximate the posterior
+    posterior = unnormalized / sum(unnormalized)
+  )
+
+round(grid_data, 2)
+```
+
+
+```{r}
+# Plot the grid approximated posterior
+ggplot(grid_data, aes(x = pi_grid, y = posterior)) +
+  geom_point() +
+  geom_segment(aes(x = pi_grid, xend = pi_grid, y = 0, yend = posterior))
+```
+
+
+```{r}
+# now sampling from posterior
+set.seed(84735)
+
+# Step 4: sample from the discretized posterior
+post_sample <- sample_n(grid_data, size = 10000, weight = posterior, replace = TRUE)
+```
+
+
+```{r}
+post_sample %>% 
+  tabyl(pi_grid) %>% 
+  adorn_totals("row")
+```
+
+```{r}
+#| message: false
+#| warning: false
+# Histogram of the grid simulation with posterior pdf
+ggplot(post_sample, aes(x = pi_grid)) + 
+  geom_histogram(aes(y = after_stat(density)), color = "white") +
+  stat_function(fun = dbeta, args = list(11, 3)) + 
+  lims(x = c(0, 1))
+```
+
+We can get better simulations by using a fine grid,
+
+```{r}
+tibble(
+  # Step 1: Define a grid of 101 pi values
+  pi_grid = seq(from = 0, to = 1, length = 101),
+  
+  # Step 2: Evaluate the prior & likelihood at each pi
+  prior = dbeta(pi_grid, 2, 2),
+  likelihood = dbinom(x = 9, size = 10, prob = pi_grid),
+  
+  # Step 3: Approximate the posterior
+  unnormalized = prior * likelihood,
+  posterior = unnormalized / sum(unnormalized)
+) -> grid_data
+
+# Plot the grid approximated posterior
+grid_data %>% 
+  ggplot(aes(x = pi_grid, y = posterior)) +
+  geom_point() + 
+  geom_segment(aes(x = pi_grid, xend = pi_grid, y = 0, yend = posterior))
+```
+
+```{r}
+set.seed(84735)
+
+# Step 4: sample from the discretized posterior
+sample_n(grid_data, size = 10000, replace = TRUE, weight = posterior) %>% 
+  ggplot(aes(x = pi_grid)) +
+  geom_histogram(aes(y = after_stat(density)), color = "white", binwidth = 0.05) +
+  stat_function(fun = dbeta, args = list(11, 3)) +
+  lims(x = c(0, 1))
+```
+
+
+### Gamma Poisson Example
+
+Let $Y$ be the number of events that occur in a one-hour period, where events occur at an average rate of $\lambda$ per hour. Further, suppose we collect two data points $(Y_1, Y_2)$ and place a $Gamma(3, 1)$ prior on $\lambda$:
+
+$$
+\begin{equation} 
+\begin{split}
+Y_i|\lambda & \stackrel{ind}{\sim} \text{Pois}(\lambda) \\
+\lambda   & \sim \text{Gamma}(3, 1)  . \\
+\end{split}
+\end{equation}
+$$
+
+
+
+```{r}
+# Step 1: Define a grid of 501 lambda values
+grid_data   <- data.frame(lambda_grid = seq(from = 0, to = 15, length = 501))
+
+# Step 2: Evaluate the prior & likelihood at each lambda
+grid_data <- grid_data %>% 
+  mutate(prior = dgamma(lambda_grid, 3, 1),
+         likelihood = dpois(2, lambda_grid) * dpois(8, lambda_grid))
+
+# Step 3: Approximate the posterior
+grid_data <- grid_data %>% 
+  mutate(unnormalized = likelihood * prior,
+         posterior = unnormalized / sum(unnormalized))
+
+# Set the seed
+set.seed(84735)
+
+# Step 4: sample from the discretized posterior
+post_sample <- sample_n(grid_data, size = 10000, 
+                        weight = posterior, replace = TRUE)
+
+post_sample %>% 
+  ggplot(aes(x = lambda_grid)) +
+  geom_histogram(aes(y = after_stat(density)), color = "white", binwidth = 0.8) +
+  stat_function(fun = dgamma, args = list(13, 3)) + 
+  lims(x = c(0, 15))
+```
+
+### Limitations of Grid Approximation
+
+For models with lots of parameters, grid approximation suffers from curse dimensionality.
+
+
+## Markov chains via rstan
+
+- MCMC samples are not taken directly from the posterior pdf $f(\theta|y)$
+
+- MCMC samples are not even independent (since generated from a markov chain)
+
+::: {.callout-note}
+# Markov Chain Monte Carlo
+
+MCMC simulation produce a sample of N dependent $\theta$ values $\left(\theta^{(1)}, \theta^{(2)}, \dots , \theta^{(N)}\right)$ which are not drawn from posterior pdf.
+:::
+
+### Beta Binomial Example
+
+```{r}
+# STEP 1: DEFINE the model
+bb_model <- "
+  data {
+    int<lower = 0, upper = 10> Y;
+  }
+  
+  parameters {
+    real<lower = 0, upper = 1> pi;
+  }
+  
+  model {
+    Y ~ binomial(10, pi);
+    pi ~ beta(2, 2);
+  }
+"
+```
+
+
+```{r}
+# STEP 2: SIMULATE the posterior
+bb_sim <- stan(model_code = bb_model, data = list(Y = 9), 
+               chains = 4, iter = 5000*2, seed = 84735)
+```
+
+
+```{r}
+as.array(bb_sim, pars = "pi") %>% head(4)
+```
+
+Please remember that, **these Markov chain values are NOT a random sample from the posterior and are NOT independent**.
+
+```{r}
+bayesplot::mcmc_trace(bb_sim, pars = "pi", size = 0.1)
+```
+
+```{r}
+#| layout-ncol: 2
+# Histogram of the Markov chain values
+mcmc_hist(bb_sim, pars = "pi") +
+  yaxis_text("TRUE") +
+  ylab("count")
+
+# Density plot of the Markov chain values
+mcmc_dens(bb_sim, pars = "pi") + 
+  yaxis_text(TRUE) + 
+  ylab("density")
+```
+
+### Gamma Poisson Example
+
+```{r}
+# STEP 1: DEFINE the model
+gp_model <- "
+  data {
+    int<lower = 0> Y[2];
+  }
+  
+  parameters {
+    real<lower = 0> lambda;
+  }
+  
+  model {
+    Y ~ poisson(lambda);
+    lambda ~ gamma(3, 1);
+  }
+"
+
+# STEP 2: SIMULATE the posterior
+gp_sim <- stan(model_code = gp_model, data = list(Y = c(2,8)), 
+               chains = 4, iter = 5000*2, seed = 84735)
+```
+
+```{r}
+# Trace plots of the 4 Markov chains
+mcmc_trace(gp_sim, pars = "lambda", size = 0.1)
+```
+
+
+```{r}
+#| layout-ncol: 2
+# Histogram of the Markov chain values
+mcmc_hist(gp_sim, pars = "lambda") + 
+  yaxis_text(TRUE) + 
+  ylab("count")
+
+# Density plot of the Markov chain values
+mcmc_dens(gp_sim, pars = "lambda") + 
+  yaxis_text(TRUE) + 
+  ylab("density")
+```
+
+### Markov Chain Diagnostics
+
+Some visual and Numerical Diagnostics
+
+- Trace plot
+- Parallel Chains
+- Effective Sample Size
+- Autocorrelation
+- R-hat ($\hat{R}$)
+
+::: {.callout-note}
+For a stable MCMC sample, there shouldn't be any pattern in the trace plot, only the random movement.
+:::
+
+```{r}
+mcmc_dens_overlay(bb_sim, pars = "pi") +
+  ylab("density")
+```
+
+Here, we observe that these four chains produce nearly indistinguishable posterior approximations. This provides evidence that our simulation is stable.
+
+::: {.callout-note}
+# Effective Sample Size Ratio
+
+The number of independent samples it would take to produce an equivalent accurate posterior estimation.
+
+Typically the effective sample size ratio is less than 1, but if this ratio is less than 0.1, then we might be suspicious of the underlying markov chain.
+:::
+
+
+```{r}
+# Calculate the effective sample size ratio
+neff_ratio(bb_sim, pars = c("pi"))
+```
+
+::: {.callout-note}
+# Autocorrelation
+Strong autocorrelation or dependence is a bad thing – it goes hand in hand with small effective sample size ratios, and thus provides a warning sign that our resulting posterior approximations might be unreliable.
+:::
+
+```{r}
+#| layout-ncol: 2
+mcmc_trace(bb_sim, pars = "pi")
+mcmc_acf(bb_sim, pars = "pi")
+```
+
+The above `bb_sim` Markov chain is mixing quickly, i.e., quickly moving around the range of posterior plausible $\pi$ values, and thus at least mimicking an independent sample.
+
+
+::: {.callout-note}
+# Fast vs slow mixing Markov chains
+
+**Fast mixing** chains exhibit behavior similar to that of an independent sample: the chains move “quickly” around the range of posterior plausible values, the autocorrelation among the chain values drops off quickly, and the effective sample size ratio is reasonably large. 
+
+**Slow mixing** chains do not enjoy the features of an independent sample: the chains move “slowly” around the range of posterior plausible values, the autocorrelation among the chain values drops off very slowly, and the effective sample size ratio is small.
+:::
+
+So how to tune a slow mixing chain?
+
+- Run a longer chain
+- Thinning
+
+::: {.callout-note}
+# R-hat
+
+We want our parallel Markov chains to be consistent to each other. R-hat addresses this consistency by comparing the variability in sampled values across all chains combined to the variability within each individual chain.
+
+Ideally, R-hat $\approx$ 1, reflecting stability across the parallel chains. In contrast, R-hat $\gt$ 1 indicates instability, with the variability in the combined chains exceeding that within the chains. Though no golden rule exists, an R-hat ratio greater than 1.05 raises some red flags about the stability of the simulation.
+:::
+
+
+```{r}
+rhat(bb_sim, pars = 'pi')
+```
+
+
+
+
+
