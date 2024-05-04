@@ -174,6 +174,8 @@ MCMC simulation produce a sample of N dependent $\theta$ values $\left(\theta^{(
 ### Beta Binomial Example
 
 ```{r}
+#| message: false
+#| warning: false
 # STEP 1: DEFINE the model
 bb_model <- "
   data {
@@ -225,6 +227,8 @@ mcmc_dens(bb_sim, pars = "pi") +
 ### Gamma Poisson Example
 
 ```{r}
+#| message: false
+#| warning: false
 # STEP 1: DEFINE the model
 gp_model <- "
   data {
