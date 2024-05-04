@@ -458,130 +458,14 @@ Markov Chain Monte Carlo
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="st">    Y ~ binomial(10, pi);</span></span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="st">    pi ~ beta(2, 2);</span></span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2: SIMULATE the posterior</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>bb_sim <span class="ot">&lt;-</span> <span class="fu">stan</span>(<span class="at">model_code =</span> bb_model, <span class="at">data =</span> <span class="fu">list</span>(<span class="at">Y =</span> <span class="dv">9</span>), </span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>               <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">iter =</span> <span class="dv">5000</span><span class="sc">*</span><span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">84735</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2: SIMULATE the posterior</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>bb_sim <span class="ot">&lt;-</span> <span class="fu">stan</span>(<span class="at">model_code =</span> bb_model, <span class="at">data =</span> <span class="fu">list</span>(<span class="at">Y =</span> <span class="dv">9</span>), </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">iter =</span> <span class="dv">5000</span><span class="sc">*</span><span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">84735</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-using C compiler: ‘Apple clang version 15.0.0 (clang-1500.1.0.2.5)’
-using SDK: ‘MacOSX14.2.sdk’
-clang -arch x86_64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/Rcpp/1.0.12/5ea2700d21e038ace58269ecdbeb9ec0/Rcpp/include/"  -I"/Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/"  -I"/Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/unsupported"  -I"/Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/BH/include" -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/StanHeaders/2.32.7/3e1bf18c6ab1dc0a4a139bf566f78bbe/StanHeaders/include/src/"  -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/StanHeaders/2.32.7/3e1bf18c6ab1dc0a4a139bf566f78bbe/StanHeaders/include/"  -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/RcppParallel/5.1.7/a45594a00f5dbb073d5ec9f48592a08a/RcppParallel/include/"  -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/rstan/2.32.6/8a5b5978f888a3477c116e0395d006f8/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/StanHeaders/2.32.7/3e1bf18c6ab1dc0a4a139bf566f78bbe/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/x86_64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/StanHeaders/2.32.7/3e1bf18c6ab1dc0a4a139bf566f78bbe/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/Eigen/Dense:1:
-In file included from /Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/Eigen/Core:19:
-/Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: 'cmath' file not found
-#include &lt;cmath&gt;
-         ^~~~~~~
-1 error generated.
-make: *** [foo.o] Error 1
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
-Chain 1: 
-Chain 1: Gradient evaluation took 1.2e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
-Chain 1: Adjust your expectations accordingly!
-Chain 1: 
-Chain 1: 
-Chain 1: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 1: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 1: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 1: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 1: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 1: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 1: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 1: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 1: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 1: 
-Chain 1:  Elapsed Time: 0.037 seconds (Warm-up)
-Chain 1:                0.037 seconds (Sampling)
-Chain 1:                0.074 seconds (Total)
-Chain 1: 
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
-Chain 2: 
-Chain 2: Gradient evaluation took 2e-06 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
-Chain 2: Adjust your expectations accordingly!
-Chain 2: 
-Chain 2: 
-Chain 2: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 2: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 2: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 2: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 2: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 2: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 2: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 2: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 2: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 2: 
-Chain 2:  Elapsed Time: 0.038 seconds (Warm-up)
-Chain 2:                0.036 seconds (Sampling)
-Chain 2:                0.074 seconds (Total)
-Chain 2: 
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
-Chain 3: 
-Chain 3: Gradient evaluation took 1e-06 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
-Chain 3: Adjust your expectations accordingly!
-Chain 3: 
-Chain 3: 
-Chain 3: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 3: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 3: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 3: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 3: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 3: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 3: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 3: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 3: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 3: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 3: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 3: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 3: 
-Chain 3:  Elapsed Time: 0.037 seconds (Warm-up)
-Chain 3:                0.039 seconds (Sampling)
-Chain 3:                0.076 seconds (Total)
-Chain 3: 
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
-Chain 4: 
-Chain 4: Gradient evaluation took 1e-06 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
-Chain 4: Adjust your expectations accordingly!
-Chain 4: 
-Chain 4: 
-Chain 4: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 4: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 4: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 4: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 4: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 4: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 4: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 4: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 4: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 4: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 4: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 4: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 4: 
-Chain 4:  Elapsed Time: 0.037 seconds (Warm-up)
-Chain 4:                0.036 seconds (Sampling)
-Chain 4:                0.073 seconds (Total)
-Chain 4: </code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.array</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.array</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>, , parameters = pi
 
@@ -595,30 +479,30 @@ iterations   chain:1   chain:2   chain:3   chain:4
 </div>
 <p>Please remember that, <strong>these Markov chain values are NOT a random sample from the posterior and are NOT independent</strong>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_trace</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>, <span class="at">size =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_trace</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>, <span class="at">size =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of the Markov chain values</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_hist</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>) <span class="sc">+</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">yaxis_text</span>(<span class="st">"TRUE"</span>) <span class="sc">+</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"count"</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Density plot of the Markov chain values</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_dens</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>) <span class="sc">+</span> </span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">yaxis_text</span>(<span class="cn">TRUE</span>) <span class="sc">+</span> </span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of the Markov chain values</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_hist</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">yaxis_text</span>(<span class="st">"TRUE"</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"count"</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Density plot of the Markov chain values</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_dens</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>) <span class="sc">+</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">yaxis_text</span>(<span class="cn">TRUE</span>) <span class="sc">+</span> </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid" width="672"></p>
+<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </div>
@@ -626,167 +510,52 @@ iterations   chain:1   chain:2   chain:3   chain:4
 <section id="gamma-poisson-example-1" class="level3" data-number="1.2.2">
 <h3 data-number="1.2.2" class="anchored" data-anchor-id="gamma-poisson-example-1"><span class="header-section-number">1.2.2</span> Gamma Poisson Example</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1: DEFINE the model</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>gp_model <span class="ot">&lt;-</span> <span class="st">"</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="st">  data {</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="st">    int&lt;lower = 0&gt; Y[2];</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="st">  parameters {</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="st">    real&lt;lower = 0&gt; lambda;</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="st">  model {</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="st">    Y ~ poisson(lambda);</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="st">    lambda ~ gamma(3, 1);</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2: SIMULATE the posterior</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>gp_sim <span class="ot">&lt;-</span> <span class="fu">stan</span>(<span class="at">model_code =</span> gp_model, <span class="at">data =</span> <span class="fu">list</span>(<span class="at">Y =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">8</span>)), </span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>               <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">iter =</span> <span class="dv">5000</span><span class="sc">*</span><span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">84735</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-using C compiler: ‘Apple clang version 15.0.0 (clang-1500.1.0.2.5)’
-using SDK: ‘MacOSX14.2.sdk’
-clang -arch x86_64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/Rcpp/1.0.12/5ea2700d21e038ace58269ecdbeb9ec0/Rcpp/include/"  -I"/Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/"  -I"/Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/unsupported"  -I"/Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/BH/include" -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/StanHeaders/2.32.7/3e1bf18c6ab1dc0a4a139bf566f78bbe/StanHeaders/include/src/"  -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/StanHeaders/2.32.7/3e1bf18c6ab1dc0a4a139bf566f78bbe/StanHeaders/include/"  -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/RcppParallel/5.1.7/a45594a00f5dbb073d5ec9f48592a08a/RcppParallel/include/"  -I"/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/rstan/2.32.6/8a5b5978f888a3477c116e0395d006f8/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/StanHeaders/2.32.7/3e1bf18c6ab1dc0a4a139bf566f78bbe/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/x86_64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/ovee/Library/Caches/org.R-project.R/R/renv/cache/v5/R-4.3/x86_64-apple-darwin20/StanHeaders/2.32.7/3e1bf18c6ab1dc0a4a139bf566f78bbe/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/Eigen/Dense:1:
-In file included from /Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/Eigen/Core:19:
-/Users/ovee/Documents/Bayesian/bae-note/renv/library/R-4.3/x86_64-apple-darwin20/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: 'cmath' file not found
-#include &lt;cmath&gt;
-         ^~~~~~~
-1 error generated.
-make: *** [foo.o] Error 1
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
-Chain 1: 
-Chain 1: Gradient evaluation took 1.2e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
-Chain 1: Adjust your expectations accordingly!
-Chain 1: 
-Chain 1: 
-Chain 1: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 1: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 1: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 1: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 1: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 1: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 1: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 1: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 1: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 1: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 1: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 1: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 1: 
-Chain 1:  Elapsed Time: 0.036 seconds (Warm-up)
-Chain 1:                0.036 seconds (Sampling)
-Chain 1:                0.072 seconds (Total)
-Chain 1: 
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
-Chain 2: 
-Chain 2: Gradient evaluation took 1e-06 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
-Chain 2: Adjust your expectations accordingly!
-Chain 2: 
-Chain 2: 
-Chain 2: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 2: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 2: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 2: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 2: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 2: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 2: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 2: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 2: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 2: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 2: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 2: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 2: 
-Chain 2:  Elapsed Time: 0.039 seconds (Warm-up)
-Chain 2:                0.037 seconds (Sampling)
-Chain 2:                0.076 seconds (Total)
-Chain 2: 
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
-Chain 3: 
-Chain 3: Gradient evaluation took 2e-06 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
-Chain 3: Adjust your expectations accordingly!
-Chain 3: 
-Chain 3: 
-Chain 3: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 3: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 3: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 3: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 3: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 3: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 3: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 3: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 3: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 3: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 3: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 3: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 3: 
-Chain 3:  Elapsed Time: 0.037 seconds (Warm-up)
-Chain 3:                0.037 seconds (Sampling)
-Chain 3:                0.074 seconds (Total)
-Chain 3: 
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
-Chain 4: 
-Chain 4: Gradient evaluation took 1e-06 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
-Chain 4: Adjust your expectations accordingly!
-Chain 4: 
-Chain 4: 
-Chain 4: Iteration:    1 / 10000 [  0%]  (Warmup)
-Chain 4: Iteration: 1000 / 10000 [ 10%]  (Warmup)
-Chain 4: Iteration: 2000 / 10000 [ 20%]  (Warmup)
-Chain 4: Iteration: 3000 / 10000 [ 30%]  (Warmup)
-Chain 4: Iteration: 4000 / 10000 [ 40%]  (Warmup)
-Chain 4: Iteration: 5000 / 10000 [ 50%]  (Warmup)
-Chain 4: Iteration: 5001 / 10000 [ 50%]  (Sampling)
-Chain 4: Iteration: 6000 / 10000 [ 60%]  (Sampling)
-Chain 4: Iteration: 7000 / 10000 [ 70%]  (Sampling)
-Chain 4: Iteration: 8000 / 10000 [ 80%]  (Sampling)
-Chain 4: Iteration: 9000 / 10000 [ 90%]  (Sampling)
-Chain 4: Iteration: 10000 / 10000 [100%]  (Sampling)
-Chain 4: 
-Chain 4:  Elapsed Time: 0.036 seconds (Warm-up)
-Chain 4:                0.035 seconds (Sampling)
-Chain 4:                0.071 seconds (Total)
-Chain 4: </code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 1: DEFINE the model</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>gp_model <span class="ot">&lt;-</span> <span class="st">"</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="st">  data {</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="st">    int&lt;lower = 0&gt; Y[2];</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="st">  parameters {</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="st">    real&lt;lower = 0&gt; lambda;</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="st">  model {</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="st">    Y ~ poisson(lambda);</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="st">    lambda ~ gamma(3, 1);</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="st">  }</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="co"># STEP 2: SIMULATE the posterior</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>gp_sim <span class="ot">&lt;-</span> <span class="fu">stan</span>(<span class="at">model_code =</span> gp_model, <span class="at">data =</span> <span class="fu">list</span>(<span class="at">Y =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">8</span>)), </span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>               <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">iter =</span> <span class="dv">5000</span><span class="sc">*</span><span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">84735</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Trace plots of the 4 Markov chains</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(gp_sim, <span class="at">pars =</span> <span class="st">"lambda"</span>, <span class="at">size =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Trace plots of the 4 Markov chains</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(gp_sim, <span class="at">pars =</span> <span class="st">"lambda"</span>, <span class="at">size =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of the Markov chain values</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_hist</span>(gp_sim, <span class="at">pars =</span> <span class="st">"lambda"</span>) <span class="sc">+</span> </span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">yaxis_text</span>(<span class="cn">TRUE</span>) <span class="sc">+</span> </span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"count"</span>)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Density plot of the Markov chain values</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_dens</span>(gp_sim, <span class="at">pars =</span> <span class="st">"lambda"</span>) <span class="sc">+</span> </span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">yaxis_text</span>(<span class="cn">TRUE</span>) <span class="sc">+</span> </span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of the Markov chain values</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_hist</span>(gp_sim, <span class="at">pars =</span> <span class="st">"lambda"</span>) <span class="sc">+</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">yaxis_text</span>(<span class="cn">TRUE</span>) <span class="sc">+</span> </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"count"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Density plot of the Markov chain values</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_dens</span>(gp_sim, <span class="at">pars =</span> <span class="st">"lambda"</span>) <span class="sc">+</span> </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">yaxis_text</span>(<span class="cn">TRUE</span>) <span class="sc">+</span> </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid" width="672"></p>
+<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </div>
@@ -815,12 +584,12 @@ Note
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_dens_overlay</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>) <span class="sc">+</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_dens_overlay</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>) <span class="sc">+</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -841,8 +610,8 @@ Effective Sample Size Ratio
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the effective sample size ratio</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">neff_ratio</span>(bb_sim, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"pi"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the effective sample size ratio</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">neff_ratio</span>(bb_sim, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"pi"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.3682844</code></pre>
 </div>
@@ -860,15 +629,15 @@ Autocorrelation
 <p>Strong autocorrelation or dependence is a bad thing – it goes hand in hand with small effective sample size ratios, and thus provides a warning sign that our resulting posterior approximations might be unreliable.</p>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_acf</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_trace</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_acf</span>(bb_sim, <span class="at">pars =</span> <span class="st">"pi"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid" width="672"></p>
+<p><img src="ch06-approx-posterior_files/figure-html/unnamed-chunk-19-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </div>
@@ -907,7 +676,7 @@ R-hat
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rhat</span>(bb_sim, <span class="at">pars =</span> <span class="st">'pi'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rhat</span>(bb_sim, <span class="at">pars =</span> <span class="st">'pi'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.000005</code></pre>
 </div>

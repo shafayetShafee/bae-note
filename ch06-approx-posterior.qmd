@@ -176,6 +176,7 @@ MCMC simulation produce a sample of N dependent $\theta$ values $\left(\theta^{(
 ```{r}
 #| message: false
 #| warning: false
+#| results: hide
 # STEP 1: DEFINE the model
 bb_model <- "
   data {
@@ -191,10 +192,7 @@ bb_model <- "
     pi ~ beta(2, 2);
   }
 "
-```
 
-
-```{r}
 # STEP 2: SIMULATE the posterior
 bb_sim <- stan(model_code = bb_model, data = list(Y = 9), 
                chains = 4, iter = 5000*2, seed = 84735)
@@ -229,6 +227,7 @@ mcmc_dens(bb_sim, pars = "pi") +
 ```{r}
 #| message: false
 #| warning: false
+#| results: hide
 # STEP 1: DEFINE the model
 gp_model <- "
   data {
