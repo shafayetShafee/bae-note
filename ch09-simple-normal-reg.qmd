@@ -1,0 +1,215 @@
+# Simple Normal Regression
+
+```{r}
+#| message: false
+# Load packages
+library(bayesrules)
+library(tidyverse)
+library(rstan)
+library(rstanarm)
+library(bayesplot)
+library(tidybayes)
+library(janitor)
+library(broom.mixed)
+```
+
+## Priors for regression parameters
+
+```{r}
+data("bikes")
+```
+
+```{r}
+bikes %>% 
+  ggplot(aes(temp_feel, rides)) + 
+  geom_point()
+```
+
+```{r}
+summary(bikes$temp_feel)
+```
+
+So the regression model with prior spec. is as follows,
+
+$$
+\begin{equation}
+\begin{split}
+Y_i | \beta_0, \beta_1, \sigma & \stackrel{ind}{\sim} N\left(\mu_i, \sigma^2\right) \;\; \text{ with } \;\; \mu_i = \beta_0 + \beta_1X_i \\
+\beta_{0c}  & \sim N\left(5000, 1000^2 \right)  \\
+\beta_1  & \sim N\left(100, 40^2 \right) \\
+\sigma   & \sim \text{Exp}(0.0008)  .\\
+\end{split}
+\end{equation}
+
+$$
+
+But we want to make sure that, when combined, these priors actually reflect our current understanding of the relationship between ridership and temperature (through simulations).
+
+
+## Posterior simulation
+
+```{r}
+#| message: false
+# Load and plot data
+data(bikes)
+ggplot(bikes, aes(x = temp_feel, y = rides)) + 
+  geom_point(size = 0.5) + 
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+
+### Simulation via rstanarm
+
+```{r}
+#| results: hide
+bike_model <- stan_glm(rides ~ temp_feel, data = bikes,
+                       family = gaussian, 
+                       prior_intercept = normal(5000, 1000), 
+                       prior = normal(100, 40), prior_aux = exponential(0.0008),
+                       chains = 4, iter = 5000*2, seed = 84735)
+```
+
+```{r}
+neff_ratio(bike_model)
+
+rhat(bike_model)
+```
+
+```{r}
+mcmc_trace(bike_model)
+mcmc_dens_overlay(bike_model)
+```
+
+Chains are stable, mixing quickly, and behaving much like an independent sample.
+
+### Optional: Simulation via rstan
+
+We can also use `rstan` instead of `rstanarm`. Then we have to write the stan model explicitly as before.
+
+```{r}
+#| eval: false
+# STEP 1: DEFINE the model
+stan_bike_model <- "
+  data {
+    int<lower=0> n;
+    vector[n] Y;
+    vector[n] X;
+  }
+  
+  parameters {
+    real beta0;
+    real beta1;
+    real<lower = 0> sigma;
+  }
+  
+  model {
+    Y ~ normal(beta0 + beta1 * X, sigma);
+    beta0 ~ normal(-2000, 1000);
+    beta1 ~ normal(100, 40);
+    sigma ~ exponential(0.0008);
+  }
+"
+```
+
+
+Note that, using `rstan`, we must directly express our prior understanding of the intercept $\beta_0$, not the centered intercept $\beta_{0c}$.
+
+```{r}
+#| eval: false
+# STEP 2: SIMULATE the posterior
+stan_bike_sim <- stan(model_code = stan_bike_model, 
+                      data = list(n = nrow(bikes), Y = bikes$rides, X = bikes$temp_feel),
+                      chains = 4, iter = 5000 * 2, seed = 84735)
+```
+
+
+## Interpreting the posterior
+
+```{r}
+tidy(bike_model, effects = c("fixed", "aux"), conf.int = TRUE, conf.level = 0.80)
+```
+
+The posterior median relationship is,
+
+$$
+\begin{equation}
+-2194.24 + 82.16 X .
+\end{equation}
+$$
+
+
+```{r}
+#| warning: false
+# 50 simulated model lines
+bikes %>% 
+  add_linpred_draws(bike_model, ndraws = 50) %>% 
+  # gives posterior plausible mean models out of 20000
+  ggplot(aes(x = temp_feel, y = rides)) +
+  geom_point(size = 0.05) + 
+  geom_line(aes(y = .linpred, group = .draw)) 
+```
+The posterior plausible models are far less variable, indicating that we’re far more confident about the relationship between ridership and temperature upon observing some data.
+
+
+```{r}
+bikes %>%
+  add_predicted_draws(bike_model, ndraws = 4) %>% 
+  ggplot(aes(temp_feel, rides)) +
+  geom_point(aes(y = .prediction, group = .draw), size = 0.2) +
+  facet_wrap(~ .draw)
+```
+
+```{r}
+bike_model_df <- as.data.frame(bike_model)
+```
+
+
+
+## Building Posterior Predictive Model
+
+Suppose a weather report indicates that tomorrow will be a 75-degree day in D.C. What’s your posterior guess of the number of riders that Capital Bikeshare should anticipate?
+
+```{r}
+# Predict rides for each parameter set in the chain
+set.seed(84735)
+
+predict_75 <- bike_model_df %>% 
+  mutate(
+    mu = `(Intercept)` + temp_feel * 75,
+    y_new = rnorm(20000, mean = mu, sd = sigma)
+  )
+```
+
+
+```{r}
+# Construct 80% posterior credible intervals
+predict_75 %>% 
+  summarise(
+    lower_mu = quantile(mu, 0.025),
+    upper_mu = quantile(mu, 0.975),
+    lower_new = quantile(y_new, 0.025),
+    upper_new = quantile(y_new, 0.975),
+  )
+```
+
+### Posterior Prediction with `rstanarm`
+
+```{r}
+# Simulate a set of predictions
+set.seed(84735)
+shortcut_prediction <- posterior_predict(bike_model, 
+                                         newdata = data.frame(temp_feel = 75))
+head(shortcut_prediction)
+```
+
+
+```{r}
+# Construct a 95% posterior credible interval
+posterior_interval(shortcut_prediction, prob = 0.95)
+```
+
+```{r}
+mcmc_dens(shortcut_prediction) +
+  xlab("Predicted ridership on a 75 degree day")
+```
+

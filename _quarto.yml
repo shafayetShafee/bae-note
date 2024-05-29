@@ -12,6 +12,7 @@ book:
     - ch06-approx-posterior.qmd
     - ch06-soln.qmd
     - ch08-posterior-inference.qmd
+    - ch09-simple-normal-reg.qmd
 
 
 format:
